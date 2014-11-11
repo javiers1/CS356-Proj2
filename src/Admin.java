@@ -72,13 +72,20 @@ public class Admin {
 		AdminGUI.main(null);
 	}
 	
-	protected static DefaultTreeModel getTreeModel(){
+	protected static Admin getInstance(){
+		if(instance == null){
+			instance = new Admin();
+		}
+			return instance;
+	}
+	
+	protected DefaultTreeModel getTreeModel(){
 		DefaultTreeModel aTree = getTreeModel(root);
 		System.out.println(aTree.getChildCount(aTree.getRoot()));
 		return aTree;
 	}
 	
-	protected static DefaultTreeModel getTreeModel(NodeComponent startNode){
+	protected DefaultTreeModel getTreeModel(NodeComponent startNode){
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
 		recursiveBuildTree(root, ((Group) startNode).getChildren());
 		DefaultTreeModel tree = new DefaultTreeModel(root);
@@ -87,7 +94,7 @@ public class Admin {
 	
 	
 	//need to build a DefaultTreeModel
-	protected static void recursiveBuildTree(DefaultMutableTreeNode parent, List<NodeComponent> children){
+	protected void recursiveBuildTree(DefaultMutableTreeNode parent, List<NodeComponent> children){
 		for(NodeComponent aNode: children){
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(((NodeComponent) aNode).getName());
 			parent.add(node);
@@ -98,7 +105,7 @@ public class Admin {
 	}
 	
 	
-	protected static int getGroupCount(){
+	protected int getGroupCount(){
 		GroupCountVisitor countVisitor = new GroupCountVisitor();
 		for(Visitable node: nodes){
 			node.accept(countVisitor);
@@ -107,7 +114,7 @@ public class Admin {
 		
 	}
 	
-	protected static int getUserCount(){
+	protected int getUserCount(){
 		UserCountVisitor countVisitor = new UserCountVisitor();
 		for(Visitable node: nodes){
 			node.accept(countVisitor);
@@ -116,7 +123,7 @@ public class Admin {
 		
 	}
 	
-	protected static int getMessageCount(){
+	protected int getMessageCount(){
 		MessageCountVisitor countVisitor = new MessageCountVisitor();
 		for(Visitable node: nodes){
 			node.accept(countVisitor);
@@ -125,7 +132,7 @@ public class Admin {
 		
 	}
 	
-	protected static int getGoodWordCount(){
+	protected int getGoodWordCount(){
 		GoodWordCountVisitor countVisitor = new GoodWordCountVisitor();
 		for(Visitable node: nodes){
 			node.accept(countVisitor);
@@ -135,17 +142,7 @@ public class Admin {
 		return countVisitor.getGoodWordCount();
 	}
 	
-
-	protected static Admin getInstance(){
-		if(instance == null){
-			return new Admin();
-		}
-		else {
-			return instance;
-		}
-	}
-	
-	protected static boolean isGroup(String node){
+	protected boolean isGroup(String node){
 		boolean result = false;
 		if(root.getGroup(node) instanceof Group){
 			result = true;
@@ -153,7 +150,7 @@ public class Admin {
 		return result;
 	}
 	
-	protected static boolean isUser(String node){
+	protected boolean isUser(String node){
 		boolean result = false;
 		if(root.getGroup(node) instanceof Group){
 			result = true;
@@ -162,7 +159,7 @@ public class Admin {
 	}
 	
 	//USED BY ADMIN GUI
-	protected static void addUser(String group,String name){
+	protected void addUser(String group,String name){
 		Group tmp = root.getGroup(group);
 		if(tmp != null){
 			User aUser = new User(name);
@@ -174,7 +171,7 @@ public class Admin {
 	}
 	
 	//USED BY ADMIN GUI
-	protected static void addGroup(String group,String groupName){
+	protected void addGroup(String group,String groupName){
 		Group tmp = root.getGroup(group);
 		if(tmp != null){
 			Group aGroup = new Group(groupName);
@@ -184,7 +181,7 @@ public class Admin {
 	}	
 	
 	//used by user class to check Admin list of users
-	protected static NodeComponent getUser(String name){
+	protected NodeComponent getUser(String name){
 		NodeComponent user = root.getUser(name);
 		if(user != null){
 			return user;
@@ -193,13 +190,13 @@ public class Admin {
 	}
 	
 	//THIS IS TEMPORARY, FOLLOWING IS DONE BY USER GUI
-	public static void follow(String n1, String n2){
+	public void follow(String n1, String n2){
 		User user = root.getUser(n1);
 		user.follow(n2);
 	}
 	
 	//THIS IS TEMPORARY, TWEETING IS DONE BY USER GUI
-	public static void tweet(String user, String message){
+	public void tweet(String user, String message){
 		User temp = root.getUser(user);
 		temp.tweet(message);
 	}

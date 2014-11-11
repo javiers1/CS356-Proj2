@@ -68,7 +68,7 @@ public class AdminGUI extends JFrame {
 			}
 		});
 		
-		tree.setModel(Admin.getTreeModel());
+		tree.setModel(Admin.getInstance().getTreeModel());
 		
 		addUserTextField = new JTextField();
 		addUserTextField.addMouseListener(new MouseAdapter() {
@@ -85,9 +85,9 @@ public class AdminGUI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String newUser = addUserTextField.getText();
-					if(Admin.isGroup(selectedNodeComponent)){
-						Admin.addUser(selectedNodeComponent, newUser);
-						tree.setModel(Admin.getTreeModel());
+					if(Admin.getInstance().isGroup(selectedNodeComponent)){
+						Admin.getInstance().addUser(selectedNodeComponent, newUser);
+						tree.setModel(Admin.getInstance().getTreeModel());
 					}
 			}
 		});

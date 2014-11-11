@@ -22,7 +22,7 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 	}
 	
 	public void follow(String user){
-		User newUser = (User) Admin.getUser(user);
+		User newUser = (User) Admin.getInstance().getUser(user);
 		if(newUser == null){
 			//user not found, error printed
 		}
