@@ -27,7 +27,6 @@ public class Admin {
 	protected void run(){
 		//add to group, also add to nodes
 		addGroup("root", "cs356");
-		addGroup("root", "mois");
 		addUser("cs356","steve");
 		addGroup("root","cs445");
 		addGroup("cs445","students");
@@ -64,10 +63,7 @@ public class Admin {
 		System.out.println("Group Count: " + getGroupCount());
 		System.out.println("User Count: " + getUserCount());
 		System.out.println("Tweet Count: " + getMessageCount());
-		System.out.println("Good Word Count: " + getGoodWordCount());
-		
-		tree = getTreeModel();
-		System.out.println(tree.getChildCount(tree.getRoot()));
+		System.out.println("Good Word Count: " + getGoodWordPercentage());
 		
 		AdminGUI.main(null);
 	}
@@ -81,7 +77,6 @@ public class Admin {
 	
 	protected DefaultTreeModel getTreeModel(){
 		DefaultTreeModel aTree = getTreeModel(root);
-		System.out.println(aTree.getChildCount(aTree.getRoot()));
 		return aTree;
 	}
 	
@@ -132,14 +127,14 @@ public class Admin {
 		
 	}
 	
-	protected int getGoodWordCount(){
-		GoodWordCountVisitor countVisitor = new GoodWordCountVisitor();
+	protected double getGoodWordPercentage(){
+		GoodWordCountVisitor countVisitor = new GoodWordCountVisitor(Arrays.asList("like", "love", "good","nice","awesome","beast"));
 		for(Visitable node: nodes){
 			node.accept(countVisitor);
 		}
 		
 		System.out.println("PERCENTGE: " + countVisitor.getGoodWordPercentage());
-		return countVisitor.getGoodWordCount();
+		return countVisitor.getGoodWordPercentage();
 	}
 	
 	protected boolean isGroup(String node){
@@ -152,7 +147,7 @@ public class Admin {
 	
 	protected boolean isUser(String node){
 		boolean result = false;
-		if(root.getGroup(node) instanceof Group){
+		if(root.getUser(node) instanceof User){
 			result = true;
 		}
 		return result;
@@ -165,8 +160,6 @@ public class Admin {
 			User aUser = new User(name);
 			tmp.addComponent(aUser);
 			nodes.add(aUser);
-			System.out.println("nigga added");
-			System.out.println(root);
 		}
 	}
 	

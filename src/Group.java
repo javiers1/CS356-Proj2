@@ -24,14 +24,6 @@ public class Group implements Visitable, NodeComponent {
 		return children;
 	}
 	
-//	public List<String>	getNewsFeed(){
-//		for(NodeComponent c: children){
-//			if(c instanceof User){
-//				
-//			}
-//		}
-//	}
-	
 	public void print(){
 		System.out.println("Group Name is :" + groupID);
 	}

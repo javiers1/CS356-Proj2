@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -22,6 +23,14 @@ import java.awt.event.MouseEvent;
 import javax.swing.JScrollPane;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
+
+import java.awt.SystemColor;
+
+import javax.swing.UIManager;
+
+import java.awt.Color;
+
+import javax.swing.border.LineBorder;
 
 
 public class AdminGUI extends JFrame {
@@ -52,23 +61,12 @@ public class AdminGUI extends JFrame {
 	 * Create the frame.
 	 */
 	public AdminGUI() {
+		setTitle("Javi's Mini Twitter - Admin Control");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 588, 384);
+		setBounds(100, 100, 600, 359);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
-		tree = new JTree();
-		tree.getSelectionModel().setSelectionMode
-        (TreeSelectionModel.SINGLE_TREE_SELECTION);
-		
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
-			public void valueChanged(TreeSelectionEvent e) {
-				selectedNodeComponent = e.getPath().getLastPathComponent().toString();
-			}
-		});
-		
-		tree.setModel(Admin.getInstance().getTreeModel());
 		
 		addUserTextField = new JTextField();
 		addUserTextField.addMouseListener(new MouseAdapter() {
@@ -88,6 +86,7 @@ public class AdminGUI extends JFrame {
 					if(Admin.getInstance().isGroup(selectedNodeComponent)){
 						Admin.getInstance().addUser(selectedNodeComponent, newUser);
 						tree.setModel(Admin.getInstance().getTreeModel());
+						addUserTextField.setText("Enter New User Name");
 					}
 			}
 		});
@@ -107,52 +106,101 @@ public class AdminGUI extends JFrame {
 		addGroupTextField.setColumns(10);
 		
 		JButton addGroupButton = new JButton("Add Group");
+		addGroupButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String newGroup = addGroupTextField.getText();
+				if(Admin.getInstance().isGroup(selectedNodeComponent)){
+					Admin.getInstance().addGroup(selectedNodeComponent, newGroup);
+					tree.setModel(Admin.getInstance().getTreeModel());
+					addGroupTextField.setText("Enter New Group Name");
+				}
+			}
+		});
 		
 		JButton userViewButton = new JButton("Open User View");
+		userViewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(Admin.getInstance().isUser(selectedNodeComponent)){
+					System.out.println("WE HERE");
+					UserUI.newUserUI((User) Admin.getInstance().getUser(selectedNodeComponent));
+				}
+			}
+		});
 		
 		JButton userCountButton = new JButton("User Count");
+		userCountButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "User Count is : " + Admin.getInstance().getUserCount());
+			}
+		});
 		
 		JButton groupCountButton = new JButton("Group Count");
+		groupCountButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "Group Count is : " + Admin.getInstance().getGroupCount());
+			}
+		});
 		
 		JButton messageCountButton = new JButton("Tweet Count");
+		messageCountButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "Total Tweet Count is : " + Admin.getInstance().getMessageCount());
+			}
+		});
 		
 		JButton gwPercentageButton = new JButton("Good Word %");
+		gwPercentageButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, "Good Word percentage is : " + (Admin.getInstance().getGoodWordPercentage() * 100) + "%" );
+			}
+		});
+		
+		JScrollPane scrollPane = new JScrollPane();
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(tree, GroupLayout.PREFERRED_SIZE, 252, GroupLayout.PREFERRED_SIZE)
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 252, GroupLayout.PREFERRED_SIZE)
+					.addGap(18)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(12)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+								.addComponent(addUserTextField, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
+								.addComponent(addGroupTextField, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE))
+							.addGap(18)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
 								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(addUserTextField, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
-									.addComponent(addUserButton))
-								.addGroup(gl_contentPane.createSequentialGroup()
-									.addComponent(addGroupTextField, GroupLayout.PREFERRED_SIZE, 180, GroupLayout.PREFERRED_SIZE)
-									.addPreferredGap(ComponentPlacement.RELATED)
+									.addGap(6)
 									.addComponent(addGroupButton, GroupLayout.PREFERRED_SIZE, 101, GroupLayout.PREFERRED_SIZE))
-								.addComponent(userViewButton, GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE)))
+								.addComponent(addUserButton)))
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
 								.addComponent(groupCountButton, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
 								.addComponent(userCountButton, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							.addGap(18)
-							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
-								.addComponent(messageCountButton, GroupLayout.PREFERRED_SIZE, 138, GroupLayout.PREFERRED_SIZE)
-								.addComponent(gwPercentageButton, 0, 0, Short.MAX_VALUE))))
-					.addContainerGap())
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(gwPercentageButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+								.addComponent(messageCountButton, GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)))
+						.addComponent(userViewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+					.addContainerGap(204, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
 						.addGroup(gl_contentPane.createSequentialGroup()
+							.addContainerGap()
+							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 312, GroupLayout.PREFERRED_SIZE))
+						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+							.addContainerGap()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(addUserTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(addUserButton))
@@ -169,12 +217,27 @@ public class AdminGUI extends JFrame {
 							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(groupCountButton)
-								.addComponent(gwPercentageButton))
-							.addGap(34))
-						.addGroup(gl_contentPane.createSequentialGroup()
-							.addComponent(tree, GroupLayout.DEFAULT_SIZE, 330, Short.MAX_VALUE)
-							.addGap(16))))
+								.addComponent(gwPercentageButton))))
+					.addGap(34))
 		);
+		
+		tree = new JTree();
+		scrollPane.setViewportView(tree);
+		tree.setForeground(Color.WHITE);
+		tree.setBorder(null);
+		tree.setBackground(Color.WHITE);
+		tree.getSelectionModel().setSelectionMode
+        (TreeSelectionModel.SINGLE_TREE_SELECTION);
+		
+		//Add Icon Renderer, selection, if group, render group image, if user, render user image
+		
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+		public void valueChanged(TreeSelectionEvent e) {
+			selectedNodeComponent = e.getPath().getLastPathComponent().toString();
+		}
+		});
+		
+		tree.setModel(Admin.getInstance().getTreeModel());
 		contentPane.setLayout(gl_contentPane);
 	}
 }

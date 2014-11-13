@@ -11,6 +11,7 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 	private List<String> following;
 	private List<String> myTweets;
 	private List<String> newsFeed;
+	private UserUI myUI;
 	
 	public User(String userName){
 		this.userName = userName;
@@ -19,6 +20,11 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 		this.following = new ArrayList<String>();
 		this.newsFeed = new ArrayList<String>();
 		this.myTweets = new ArrayList<String>();
+		this.myUI = null;
+	}
+	
+	public void setUI(UserUI userUI){
+		this.myUI = userUI;
 	}
 	
 	public void follow(String user){
@@ -39,10 +45,14 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 		newsFeed.add(userName + ": " + (String) tweetMsg);
 		setChanged();
 		notifyObservers(tweetMsg);
+		clearChanged();
+		setChanged();
+		notifyObservers(getNewsFeed());
+		clearChanged();
 	}
 	
 	public void addFollower(String uName){
-		followers.add(uName);
+		followers.add(uName);		
 	}
 	
 	public List<String> getFollowing(){
@@ -68,7 +78,6 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 	public void update(Observable o,Object arg){
 		if(arg instanceof String){
 			newsFeed.add(((User) o).getName() + ": " + (String) arg);
-			//System.out.println(((User) o).getName() + ": " + arg);
 		}
 	}
 
@@ -86,5 +95,12 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
+	}
+
+	public void addNewObservers() {
+		for(String user: following){
+			User temp = (User) Admin.getInstance().getUser(user);
+			temp.addObserver(myUI);
+		}
 	}
 }

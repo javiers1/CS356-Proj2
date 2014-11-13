@@ -1,12 +1,17 @@
 import java.text.DecimalFormat;
 import java.util.*;
 
-
 public class GoodWordCountVisitor implements Visitor {
-
-	List<String> goodWords = Arrays.asList("like", "love", "good","nice","awesome","beast");
-	int goodWordCount = 0;
-	int totalWordCount = 0;
+	//change this
+	List<String> goodWords;
+	int goodWordCount;
+	int totalWordCount;
+	
+	public GoodWordCountVisitor(List<String> gw){
+		this.goodWords = gw;
+		goodWordCount = 0;
+		totalWordCount = 0;
+	}
 	
 	public void visit(User user) {
 		List<String> tweetsTemp = user.getMyTweets();
@@ -37,11 +42,10 @@ public class GoodWordCountVisitor implements Visitor {
 	}
 	
 	public double getGoodWordPercentage(){
-		double result = (double) goodWordCount/totalWordCount;
-		//DecimalFormat df = new DecimalFormat("#.###");      
-		//result = Double.valueOf(df.format(result));
-		
-		return result;
+		double result = (double) goodWordCount/totalWordCount;		
+		DecimalFormat df = new DecimalFormat("#.0000"); 
+		String temp = df.format(result);
+		return Double.valueOf(temp);
 	}
 	
 }
