@@ -1,6 +1,8 @@
 import java.util.*;
-/*
- * Composite Group of Users and/or Groups
+/**
+ * Group class. Implements the Visitor pattern and Composite pattern named NodeComponent
+ * @author Javi
+ *
  */
 
 public class Group implements Visitable, NodeComponent {
@@ -28,6 +30,11 @@ public class Group implements Visitable, NodeComponent {
 		System.out.println("Group Name is :" + groupID);
 	}
 	
+	/**
+	 * Recursively search for a Group and return it
+	 * @param group - String of the Group Name
+	 * @return Group instance
+	 */
 	public Group getGroup(String group){
 		if(groupID.equals(group)){
 			return this;
@@ -43,6 +50,11 @@ public class Group implements Visitable, NodeComponent {
 		return null;
 	}
 	
+	/**
+	 * Recursively search for a User and return it
+	 * @param group - String of the User Name
+	 * @return User instance
+	 */
 	public User getUser(String user) {
 		User result = null;
 		for(NodeComponent tmp: children){
@@ -64,7 +76,10 @@ public class Group implements Visitable, NodeComponent {
 		result = groupID + ": " + children.toString();
 		return result;
 	}
-
+	
+	/**
+	 * Implement the Visitor pattern.
+	 */
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
 	}

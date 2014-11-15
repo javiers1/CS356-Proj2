@@ -1,13 +1,17 @@
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.JTree;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
@@ -32,7 +36,15 @@ import java.awt.Color;
 
 import javax.swing.border.LineBorder;
 
-
+/**
+ * AdminGUI. This was generated using the Auto Generated Code by the Eclipse Window
+ * builder, so sorry for the sloppy code.
+ * 
+ * This AdminGUI is called once from the Admin Singleton Class at Instantiation, so
+ * it is also a Singleton
+ * @author Javi
+ *
+ */
 public class AdminGUI extends JFrame {
 
 	private JPanel contentPane;
@@ -42,7 +54,9 @@ public class AdminGUI extends JFrame {
 	private String selectedNodeComponent;
 
 	/**
-	 * Launch the application.
+	 * Launch the application. 
+	 * NOTE: by default, the window builder designed the class this way so,
+	 * I went with it.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -58,7 +72,10 @@ public class AdminGUI extends JFrame {
 	}
 
 	/**
-	 * Create the frame.
+	 * Create the frame. Add Components. Add Appropriate Listeners
+	 * 
+	 * NOTE: Any time a Group is added with no children, it is displayed
+	 * as a leaf until the Children (Users) are added.
 	 */
 	public AdminGUI() {
 		setTitle("Javi's Mini Twitter - Admin Control");
@@ -123,7 +140,6 @@ public class AdminGUI extends JFrame {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(Admin.getInstance().isUser(selectedNodeComponent)){
-					System.out.println("WE HERE");
 					UserUI.newUserUI((User) Admin.getInstance().getUser(selectedNodeComponent));
 				}
 			}
@@ -157,7 +173,7 @@ public class AdminGUI extends JFrame {
 		gwPercentageButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JOptionPane.showMessageDialog(null, "Good Word percentage is : " + (Admin.getInstance().getGoodWordPercentage() * 100) + "%" );
+				JOptionPane.showMessageDialog(null, "Good Word percentage is : " + Admin.getInstance().getGoodWordPercentage() + "%" );
 			}
 		});
 		
@@ -229,7 +245,6 @@ public class AdminGUI extends JFrame {
 		tree.getSelectionModel().setSelectionMode
         (TreeSelectionModel.SINGLE_TREE_SELECTION);
 		
-		//Add Icon Renderer, selection, if group, render group image, if user, render user image
 		
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 		public void valueChanged(TreeSelectionEvent e) {
@@ -238,6 +253,7 @@ public class AdminGUI extends JFrame {
 		});
 		
 		tree.setModel(Admin.getInstance().getTreeModel());
+		
 		contentPane.setLayout(gl_contentPane);
 	}
 }

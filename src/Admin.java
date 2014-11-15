@@ -2,18 +2,19 @@ import java.util.*;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 
-/*
- * Singleton Administrator Control Class
- * 
- * to do, add a isGroup and isUser method for GUI
+/**
+ * Admin Singleton Class. Creates a single instance of Admin control panel and Admin UI
+ * Handles the insertion of Users and Groups
+ * Returns basic information about users and groups
+ * Also returns percentage and counts using Visitors
+ * @author Javi
+ *
  */
 
 public class Admin {
 	
 	private static Admin instance = null;
-	private static TreeModel tree;
 	private static List<NodeComponent> nodes;
 	private static Group root = null;
 	 
@@ -22,52 +23,49 @@ public class Admin {
 		//nodes = new HashMap<String,NodeComponent>();
 		root = new Group("root");
 		nodes = new ArrayList<NodeComponent>();
-	}
-
-	protected void run(){
-		//add to group, also add to nodes
-		addGroup("root", "cs356");
-		addUser("cs356","steve");
-		addGroup("root","cs445");
-		addGroup("cs445","students");
-		addUser("cs445","javi");
-		addGroup("students","Astudents");
-		addUser("Astudents","john");
-		addUser("Astudents","cecy");
-		
-		User temp = root.getUser("javi");
-		User temp3 = root.getUser("cecy");
-		Group temp2 = root.getGroup("Astudents");
-		System.out.println("Found: " + temp);		
-		System.out.println("found the group: " + temp2);
-		
-		System.out.println(root);
-
-		//called from UI User, wrap this to take a name and match it
-		follow("javi","john");
-		follow("javi","steve");
-		follow("javi","cecy");
-		follow("cecy","javi");
-				
-		//called from UI User interface
-		tweet("john","TWITTER SUCKS");
-		tweet("john","A LOT");
-		tweet("javi","I like Turtles");
-		tweet("steve","steve is a beast");
-		tweet("cecy","I love javi");
-		tweet("javi","I LOVE CESS");
-		
-		
-		System.out.println("javis newsfeed: " + temp.getNewsFeed());
-		System.out.println("cecys newsfeed: " + temp3.getNewsFeed());
-		System.out.println("Group Count: " + getGroupCount());
-		System.out.println("User Count: " + getUserCount());
-		System.out.println("Tweet Count: " + getMessageCount());
-		System.out.println("Good Word Count: " + getGoodWordPercentage());
-		
 		AdminGUI.main(null);
 	}
 	
+	/**
+	 * Called Once from driver just to initialize some pre-loaded values
+	 */
+	protected void run(){
+		//pre-loaded items
+		addGroup("root", "cs356");
+		addUser("cs356","Steve");
+		addGroup("root","cs445");
+		addGroup("cs445","students");
+		addUser("cs445","Mack");
+		addUser("students","John");
+		addUser("students","Cecy");
+		addUser("root","Yu");
+		addUser("root","Javi");
+		
+		
+		//some pre-loaded follows
+		follow("Javi","John");
+		follow("Javi","Steve");
+		follow("Javi","Cecy");
+		follow("Cecy","Javi");
+		follow("Javi","Yu");
+		follow("Yu","Javi");
+				
+		//pre-loaded tweets to demonstrate
+		tweet("John","TWITTER is so cool");
+		tweet("John","Its awesome");
+		tweet("Javi","I like Turtles");
+		tweet("Steve","steve is a beast");
+		tweet("Cecy","I love javi");
+		tweet("Javi","I LOVE cecy");
+		tweet("Yu","I like teaching cs356");
+		tweet("Javi","I hope I get a good score");
+		
+	}
+	
+	/**
+	 * following Singleton Pattern
+	 * @return
+	 */
 	protected static Admin getInstance(){
 		if(instance == null){
 			instance = new Admin();
@@ -75,11 +73,16 @@ public class Admin {
 			return instance;
 	}
 	
+	/**
+	 * returns a Default tree model built upon the root, made of users and groups
+	 * @return DefaultTreeModel 
+	 */
 	protected DefaultTreeModel getTreeModel(){
 		DefaultTreeModel aTree = getTreeModel(root);
 		return aTree;
 	}
 	
+	//helper function
 	protected DefaultTreeModel getTreeModel(NodeComponent startNode){
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
 		recursiveBuildTree(root, ((Group) startNode).getChildren());
@@ -87,8 +90,7 @@ public class Admin {
 		return tree;
 	}
 	
-	
-	//need to build a DefaultTreeModel
+	//another helper function, to recurse across tree
 	protected void recursiveBuildTree(DefaultMutableTreeNode parent, List<NodeComponent> children){
 		for(NodeComponent aNode: children){
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(((NodeComponent) aNode).getName());
@@ -99,7 +101,10 @@ public class Admin {
 		}	
 	}
 	
-	
+	/**
+	 * utilizes the Visitor pattern to count Groups using GroupCountVisitor
+	 * @return Integer number of groups
+	 */
 	protected int getGroupCount(){
 		GroupCountVisitor countVisitor = new GroupCountVisitor();
 		for(Visitable node: nodes){
@@ -109,6 +114,10 @@ public class Admin {
 		
 	}
 	
+	/**
+	 * utilizes the Visitor pattern to count Users using UserCountVisitor
+	 * @return Integer number of Users
+	 */
 	protected int getUserCount(){
 		UserCountVisitor countVisitor = new UserCountVisitor();
 		for(Visitable node: nodes){
@@ -118,6 +127,10 @@ public class Admin {
 		
 	}
 	
+	/**
+	 * utilizes the Visitor pattern to count Tweets using MessageCountVisitor
+	 * @return Integer number of Tweets
+	 */
 	protected int getMessageCount(){
 		MessageCountVisitor countVisitor = new MessageCountVisitor();
 		for(Visitable node: nodes){
@@ -127,16 +140,25 @@ public class Admin {
 		
 	}
 	
+	/**
+	 * utilizes the Visitor pattern to calculate GW percentage using 
+	 * GoodWordPercentageVisitor
+	 * @return double percentage of good words, in format 23.45 = 24.35%
+	 */
 	protected double getGoodWordPercentage(){
 		GoodWordCountVisitor countVisitor = new GoodWordCountVisitor(Arrays.asList("like", "love", "good","nice","awesome","beast"));
 		for(Visitable node: nodes){
 			node.accept(countVisitor);
 		}
 		
-		System.out.println("PERCENTGE: " + countVisitor.getGoodWordPercentage());
 		return countVisitor.getGoodWordPercentage();
 	}
 	
+	/**
+	 * Checks to see if the name passed to it is a Group in the tree.
+	 * @param String node
+	 * @return boolean 
+	 */
 	protected boolean isGroup(String node){
 		boolean result = false;
 		if(root.getGroup(node) instanceof Group){
@@ -145,6 +167,11 @@ public class Admin {
 		return result;
 	}
 	
+	/**
+	 * Checks to see if the name passed to it is a User in the tree.
+	 * @param String node
+	 * @return boolean 
+	 */
 	protected boolean isUser(String node){
 		boolean result = false;
 		if(root.getUser(node) instanceof User){
@@ -153,7 +180,11 @@ public class Admin {
 		return result;
 	}
 	
-	//USED BY ADMIN GUI
+	/**
+	 * Adds a new User to the Tree. Passes the Parent node in string and User name
+	 * @param groupname as a String to be the parent node
+	 * @param name of new User child to be added to parent node
+	 */
 	protected void addUser(String group,String name){
 		Group tmp = root.getGroup(group);
 		if(tmp != null){
@@ -163,7 +194,11 @@ public class Admin {
 		}
 	}
 	
-	//USED BY ADMIN GUI
+	/**
+	 * Adds a new Group to the Tree.
+	 * @param Parent group name as a String 
+	 * @param name of new Group child to be added to parent node
+	 */
 	protected void addGroup(String group,String groupName){
 		Group tmp = root.getGroup(group);
 		if(tmp != null){
@@ -173,7 +208,11 @@ public class Admin {
 		}
 	}	
 	
-	//used by user class to check Admin list of users
+	/**
+	 * Gets the User.
+	 * @param name - String of User name
+	 * @return NodeComponent - The actual User
+	 */
 	protected NodeComponent getUser(String name){
 		NodeComponent user = root.getUser(name);
 		if(user != null){
@@ -182,20 +221,16 @@ public class Admin {
 		return null;
 	}
 	
-	//THIS IS TEMPORARY, FOLLOWING IS DONE BY USER GUI
+	//just a temporary method to pre-load follows before running UI
 	public void follow(String n1, String n2){
 		User user = root.getUser(n1);
 		user.follow(n2);
 	}
 	
-	//THIS IS TEMPORARY, TWEETING IS DONE BY USER GUI
+	//temporary method to pre-tweet before running UI
 	public void tweet(String user, String message){
 		User temp = root.getUser(user);
 		temp.tweet(message);
 	}
-	
-	public void print(){
-	}
-
 	
 }

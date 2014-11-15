@@ -1,4 +1,8 @@
-
+/**
+ * Implements the Visitor pattern. Counts the number of Users, ignores Groups
+ * @author Javi
+ *
+ */
 public class UserCountVisitor implements Visitor {
 	int count = 0;
 	

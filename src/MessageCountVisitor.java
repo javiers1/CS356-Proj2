@@ -1,4 +1,9 @@
-
+/**
+ * Implements the Visitor pattern. Counts Number of Messages by summing total number
+ * of tweets from each user
+ * @author Javi
+ *
+ */
 public class MessageCountVisitor implements Visitor {
 	
 	int messageCount = 0;

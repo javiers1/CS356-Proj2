@@ -1,9 +1,13 @@
 import java.util.*;
 
-/*
- * 	Every User observes other users, Leaf of the NodeComponent
+/**
+ * User class. This class implements the Observer, Visitor, and Composite pattern
+ * Users observe other users
+ * Visitors are accepted to access User field data
+ * Users are the Leaf nodes of the Composite pattern named NodeComponent
+ * @author Javi
+ *
  */
-
 public class User extends Observable implements Observer, NodeComponent, Visitable{
 	private String userName;
 	private int tweetCount;
@@ -39,6 +43,13 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 		}
 	}
 	
+	/**
+	 * Add tweet to User tweets and NewsFeed. Also notify observers.
+	 * First Notification - Observers add the tweet to their newsfeed
+	 * Second Notification - Obeserver GUI (UserUI) is notified to refresh
+	 * display of newsfeed
+	 * @param tweetMsg
+	 */
 	public void tweet(String tweetMsg){
 		myTweets.add(tweetMsg);
 		tweetCount++;
@@ -75,12 +86,19 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 		return tweetCount;
 	}
 	
+	/**
+	 * If a User sends a Tweet, all the Users followers will update their newsfeed
+	 * Implementation of Observer pattern
+	 */
 	public void update(Observable o,Object arg){
 		if(arg instanceof String){
 			newsFeed.add(((User) o).getName() + ": " + (String) arg);
 		}
 	}
-
+	
+	/**
+	 * Implementation of Composite Pattern. Returns the User.
+	 */
 	public User getUser(String user) {
 		if(userName.equals(user)){
 			return this;
@@ -92,11 +110,19 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 	public String toString(){
 		return userName;
 	}
-
+	
+	/**
+	 * Implementation of Visitor pattern
+	 */
 	public void accept(Visitor visitor) {
 		visitor.visit(this);
 	}
-
+	
+	/**
+	 * Used so that the UserUI associated with this User will observe the 
+	 * activity of Users that are being followed. Used to refresh newsFeed
+	 * any time new tweets are posted
+	 */
 	public void addNewObservers() {
 		for(String user: following){
 			User temp = (User) Admin.getInstance().getUser(user);

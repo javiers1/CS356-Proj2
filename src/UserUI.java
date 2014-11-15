@@ -1,28 +1,10 @@
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JList;
-
-import java.awt.GridBagLayout;
-import java.awt.FlowLayout;
-
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-
-import java.awt.CardLayout;
-
 import javax.swing.JScrollPane;
-import javax.swing.BoxLayout;
-import javax.swing.ScrollPaneConstants;
-
-import java.awt.Component;
-
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -34,7 +16,22 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import javax.swing.ListSelectionModel;
 
+import java.awt.SystemColor;
+
+/**
+ * UserUI gets instantiated from the AdminGUI class. The UserUI must be passed in a
+ * User object to function.
+ * 
+ * This also implements the Observer pattern. This class observes the Users that are
+ * being followed by its User. Everytime a User that is being followed tweets, 
+ * the UserUI refreshed the NewsFeed
+ * 
+ * Again, sorry for the sloppy Auto-Generated Code
+ * @author Javi
+ *
+ */
 public class UserUI extends JFrame implements Observer{
 	private JTextField txtEnterUserName;
 	private JTextField txtEnterTweet;
@@ -42,7 +39,10 @@ public class UserUI extends JFrame implements Observer{
 	private User globalUser;
 
 	/**
-	 * Launch the application.
+	 * Launch the application. 
+	 * NOTE: This was the way the WindowBuilder tool created the class
+	 * so I went with it. Also, the class must be instantiated with a User
+	 * object passed in.
 	 */
 	public static void newUserUI(final User user) {
 		EventQueue.invokeLater(new Runnable() {
@@ -50,7 +50,6 @@ public class UserUI extends JFrame implements Observer{
 				try {
 					UserUI frame = new UserUI(user);
 					frame.setVisible(true);
-					System.out.println("P.O.P holdn it down");
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -59,7 +58,7 @@ public class UserUI extends JFrame implements Observer{
 	}
 
 	/**
-	 * Create the frame.
+	 * Create the frame. Add Components.
 	 */
 	public UserUI(final User user) {
 		setTitle(user.getName());
@@ -74,6 +73,8 @@ public class UserUI extends JFrame implements Observer{
 		JScrollPane followingScrollPane = new JScrollPane();
 		
 		final JList followingList = new JList(user.getFollowing().toArray());
+		followingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		followingList.setSelectionBackground(SystemColor.textHighlight);
 		followingScrollPane.setViewportView(followingList);
 		
 		JScrollPane newsFeedScrollPane = new JScrollPane();
@@ -94,6 +95,7 @@ public class UserUI extends JFrame implements Observer{
 		
 		JButton btnFollowUser = new JButton("Follow User");
 		btnFollowUser.addMouseListener(new MouseAdapter() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String userName = txtEnterUserName.getText();
@@ -116,7 +118,7 @@ public class UserUI extends JFrame implements Observer{
 		txtEnterTweet.setText("Tweet Something!");
 		txtEnterTweet.setColumns(10);
 		
-		JButton btnNewButton = new JButton("Send Tweet");
+		JButton btnNewButton = new JButton("Post Tweet");
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -168,11 +170,16 @@ public class UserUI extends JFrame implements Observer{
 		);
 		
 		newsFeedList = new JList(user.getNewsFeed().toArray());
+		newsFeedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		newsFeedList.setSelectionBackground(SystemColor.textHighlight);
 		newsFeedScrollPane.setViewportView(newsFeedList);
 		getContentPane().setLayout(groupLayout);
 	}
 
 	@Override
+	/**
+	 * Update the Newsfeed any time a User that is being followed tweets
+	 */
 	public void update(Observable o, Object arg) {
 		if(arg instanceof List){
 			newsFeedList.setListData(globalUser.getNewsFeed().toArray());
