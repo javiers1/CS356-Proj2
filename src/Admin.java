@@ -28,6 +28,7 @@ public class Admin {
 	
 	/**
 	 * Called Once from driver just to initialize some pre-loaded values
+	 * NOTE: Adding Groups and Users from the GUI works as well!
 	 */
 	protected void run(){
 		//pre-loaded items
@@ -219,6 +220,59 @@ public class Admin {
 			return user;
 		}
 		return null;
+	}
+	
+	/**
+	 * Validates the users
+	 * @return true if all users/groups are valid, false if any one user/group is invalid
+	 */
+	protected Boolean validateUsers(){
+		Boolean result = true;
+		for(NodeComponent node: nodes){
+			if(node.getName().contains(" ")){
+				result = false;
+			} else if(isDuplicate(node)){
+				result = false;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Check to see if there is a duplicate user or group
+	 * @param name
+	 * @return true if duplicate, false if not
+	 */
+	protected Boolean isDuplicate(NodeComponent checkNode){
+		Boolean result = false;
+		for(NodeComponent node: nodes){
+			if(!checkNode.equals(node)){
+				if(node.getName().equals(checkNode.getName())){
+					result = true;
+				}
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns a String of the Last Updated User Name and Time
+	 * @return String Latest Updated User + Time Updated
+	 */
+	protected String getLastUpdatedUser(){
+		String result;
+		long temp = (long) 0.0;
+		User tempUser = null;
+		for(NodeComponent node : nodes){
+			if(node instanceof User){
+				if(((User) node).getLastUpdatedTime() > temp){
+					temp = ((User) node).getLastUpdatedTime();
+					tempUser = (User) node;
+				}
+			}
+		}
+		result = tempUser.getName() + " : " + temp;
+		return result;
 	}
 	
 	//just a temporary method to pre-load follows before running UI

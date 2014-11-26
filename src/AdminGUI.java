@@ -178,6 +178,26 @@ public class AdminGUI extends JFrame {
 		});
 		
 		JScrollPane scrollPane = new JScrollPane();
+		
+		JButton checkUsersBttn = new JButton("Check Names");
+		checkUsersBttn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(Admin.getInstance().validateUsers()){
+					JOptionPane.showMessageDialog(null, "All Users and Groups are Valid!");
+				}else{
+					JOptionPane.showMessageDialog(null, "Invalid: There is at least one User or Group with whitespace or same name!");
+				}
+			}
+		});
+		
+		JButton latestUserBtn = new JButton("Last Updated User");
+		latestUserBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				JOptionPane.showMessageDialog(null, Admin.getInstance().getLastUpdatedUser());
+			}
+		});
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -199,24 +219,24 @@ public class AdminGUI extends JFrame {
 						.addGroup(gl_contentPane.createSequentialGroup()
 							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(checkUsersBttn, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
 								.addComponent(groupCountButton, Alignment.TRAILING, 0, 0, Short.MAX_VALUE)
 								.addComponent(userCountButton, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+								.addComponent(latestUserBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(gwPercentageButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 								.addComponent(messageCountButton, GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE)))
 						.addComponent(userViewButton, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-					.addContainerGap(204, Short.MAX_VALUE))
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+					.addContainerGap()
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 312, GroupLayout.PREFERRED_SIZE)
 						.addGroup(gl_contentPane.createSequentialGroup()
-							.addContainerGap()
-							.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 312, GroupLayout.PREFERRED_SIZE))
-						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
-							.addContainerGap()
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(addUserTextField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 								.addComponent(addUserButton))
@@ -226,7 +246,11 @@ public class AdminGUI extends JFrame {
 								.addComponent(addGroupButton))
 							.addGap(18)
 							.addComponent(userViewButton)
-							.addGap(117)
+							.addGap(70)
+							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+								.addComponent(checkUsersBttn)
+								.addComponent(latestUserBtn))
+							.addGap(18)
 							.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 								.addComponent(userCountButton)
 								.addComponent(messageCountButton))

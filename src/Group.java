@@ -7,13 +7,19 @@ import java.util.*;
 
 public class Group implements Visitable, NodeComponent {
 	private String groupID;
+	private long creationTime;
 	private List<NodeComponent> children;
 	
 	public Group(String name){
 		children = new ArrayList<NodeComponent>();
 		groupID = name;
+		creationTime = System.currentTimeMillis();
 	}
 	
+	public long getCreationTime() {
+		return creationTime;
+	}
+
 	public void addComponent(NodeComponent comp){
 		children.add(comp);
 	}

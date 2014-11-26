@@ -11,6 +11,12 @@ import java.util.*;
 public class User extends Observable implements Observer, NodeComponent, Visitable{
 	private String userName;
 	private int tweetCount;
+	private long creationTime;
+	private long lastUpdatedTime;
+	public long getLastUpdatedTime() {
+		return lastUpdatedTime;
+	}
+
 	private List<String> followers;
 	private List<String> following;
 	private List<String> myTweets;
@@ -25,8 +31,14 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 		this.newsFeed = new ArrayList<String>();
 		this.myTweets = new ArrayList<String>();
 		this.myUI = null;
+		creationTime = System.currentTimeMillis();
+		lastUpdatedTime = creationTime;
 	}
 	
+	public long getCreationTime() {
+		return creationTime;
+	}
+
 	public void setUI(UserUI userUI){
 		this.myUI = userUI;
 	}
@@ -54,6 +66,7 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 		myTweets.add(tweetMsg);
 		tweetCount++;
 		newsFeed.add(userName + ": " + (String) tweetMsg);
+		lastUpdatedTime = System.currentTimeMillis();
 		setChanged();
 		notifyObservers(tweetMsg);
 		clearChanged();
@@ -109,6 +122,16 @@ public class User extends Observable implements Observer, NodeComponent, Visitab
 	
 	public String toString(){
 		return userName;
+	}
+	
+	public List<String> getFollowingWithTimes(){
+		List<String> result = new ArrayList<String>();
+		User temp;
+		for(String s: following){
+			temp = (User) Admin.getInstance().getUser(s);
+			result.add(temp.getLastUpdatedTime() + " - " + s);
+		}
+		return result;
 	}
 	
 	/**

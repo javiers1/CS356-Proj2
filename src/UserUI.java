@@ -35,7 +35,9 @@ import java.awt.SystemColor;
 public class UserUI extends JFrame implements Observer{
 	private JTextField txtEnterUserName;
 	private JTextField txtEnterTweet;
+	private JLabel txtLastUpdate;
 	private JList newsFeedList;
+	private JList myFollowingList;
 	private User globalUser;
 
 	/**
@@ -61,21 +63,22 @@ public class UserUI extends JFrame implements Observer{
 	 * Create the frame. Add Components.
 	 */
 	public UserUI(final User user) {
-		setTitle(user.getName());
+		setTitle(user.getName() + " - Created: " + user.getCreationTime());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 567, 458);
+		setBounds(100, 100, 616, 490);
 		
 		globalUser = user;
 		globalUser.setUI(this);
 		globalUser.addObserver(this);
 		globalUser.addNewObservers();
 		
+		myFollowingList = new JList(globalUser.getFollowingWithTimes().toArray());
+		
 		JScrollPane followingScrollPane = new JScrollPane();
 		
-		final JList followingList = new JList(user.getFollowing().toArray());
-		followingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		followingList.setSelectionBackground(SystemColor.textHighlight);
-		followingScrollPane.setViewportView(followingList);
+		myFollowingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		myFollowingList.setSelectionBackground(SystemColor.textHighlight);
+		followingScrollPane.setViewportView(myFollowingList);
 		
 		JScrollPane newsFeedScrollPane = new JScrollPane();
 		
@@ -103,7 +106,7 @@ public class UserUI extends JFrame implements Observer{
 					user.follow(userName);
 					globalUser.addNewObservers();
 					txtEnterUserName.setText("Enter User Name");
-					followingList.setListData(user.getFollowing().toArray());
+					myFollowingList.setListData(globalUser.getFollowingWithTimes().toArray());
 				}
 			}
 		});
@@ -118,38 +121,47 @@ public class UserUI extends JFrame implements Observer{
 		txtEnterTweet.setText("Tweet Something!");
 		txtEnterTweet.setColumns(10);
 		
+		txtLastUpdate = new JLabel("Last Tweet Sent: ");
+		
 		JButton btnNewButton = new JButton("Post Tweet");
 		btnNewButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				String tweet = txtEnterTweet.getText();
 				user.tweet(tweet);
+				txtLastUpdate.setText("Last Tweet Sent: " + user.getLastUpdatedTime());
 				txtEnterTweet.setText("Tweet Something!");
 			}
 		});
+		
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
-				.addGroup(Alignment.LEADING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(newsFeedScrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
-						.addComponent(followingScrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
-						.addComponent(lblNewLabel)
-						.addComponent(followingLabel, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addGap(6)
+							.addComponent(txtLastUpdate))
+						.addComponent(newsFeedScrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+						.addComponent(followingScrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
 						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addComponent(txtEnterUserName, GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
+							.addComponent(lblNewLabel)
+							.addGap(529))
+						.addComponent(followingLabel, Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 139, GroupLayout.PREFERRED_SIZE)
+						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+							.addComponent(txtEnterUserName, GroupLayout.DEFAULT_SIZE, 465, Short.MAX_VALUE)
 							.addGap(18)
 							.addComponent(btnFollowUser))
 						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
-							.addComponent(txtEnterTweet, GroupLayout.DEFAULT_SIZE, 423, Short.MAX_VALUE)
+							.addComponent(txtEnterTweet, GroupLayout.DEFAULT_SIZE, 470, Short.MAX_VALUE)
 							.addGap(18)
 							.addComponent(btnNewButton)))
 					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+			groupLayout.createParallelGroup(Alignment.TRAILING)
+				.addGroup(groupLayout.createSequentialGroup()
 					.addContainerGap()
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtEnterUserName, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -162,7 +174,9 @@ public class UserUI extends JFrame implements Observer{
 					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
 						.addComponent(txtEnterTweet, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(btnNewButton))
-					.addPreferredGap(ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+					.addComponent(txtLastUpdate)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblNewLabel)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(newsFeedScrollPane, GroupLayout.PREFERRED_SIZE, 176, GroupLayout.PREFERRED_SIZE)
@@ -183,6 +197,7 @@ public class UserUI extends JFrame implements Observer{
 	public void update(Observable o, Object arg) {
 		if(arg instanceof List){
 			newsFeedList.setListData(globalUser.getNewsFeed().toArray());
+			myFollowingList.setListData(globalUser.getFollowingWithTimes().toArray());
 		}
 	}
 }
